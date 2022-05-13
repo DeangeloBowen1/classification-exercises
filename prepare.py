@@ -1,3 +1,8 @@
+from env import get_db_url
+from sklearn.model_selection import train_test_split
+
+import pandas as pd
+import acquire as aq
 
 """
 Contains CodeUp dataset functions for prepping data.
@@ -6,17 +11,6 @@ Author: Deangelo Bowen
 
 Splt:
 
-split_iris_data() :
-
-splits iris data for species predition data
-
-split_titanic_data() :
-
-splits titanic data for survival prediction data
-
-split_telco_data():
-
-splits telco data for churn prediction data
 
 Prep:
 
@@ -36,8 +30,27 @@ preps and cleans telco data
 
 """
 
+"""
+Sample Code from fred
 
+def train_validate_test_split(df, target, seed=123):
+    '''
+    This function takes in a dataframe, the name of the target variable
+    (for stratification purposes), and an integer for a setting a seed
+    and splits the data into train, validate and test.
+    Test is 20% of the original dataset, validate is .30*.80= 24% of the
+    original dataset, and train is .70*.80= 56% of the original dataset.
+    The function returns, in this order, train, validate and test dataframes.
+    '''
+    train_validate, test = train_test_split(df, test_size=0.2,
+                                            random_state=seed,
+                                            stratify=df[target])
+    train, validate = train_test_split(train_validate, test_size=0.3,
+                                       random_state=seed,
+                                       stratify=train_validate[target])
+    return train, validate, test
 
+"""
 
 #split/prep iris data function------------------------------------------------------
 def split_iris_data(iris):
@@ -50,11 +63,21 @@ def split_iris_data(iris):
     return train, validate, test
 
 def prep_iris(iris):
-    iris = iris.drop(['species_id','measure_id'], axis = 1)
+    iris = iris.drop(['species_id','measurement_id'], axis = 1)
     iris = iris.rename(columns={'species_name': 'species'})
     dummy_var = pd.get_dummies(iris[['species']], dummy_na = False, drop_first=True)
     iris = pd.concat([iris, dummy_var], axis = 1)
-    return
+
+    # the following portion is used only for training purposes with
+    # the training dataset. Removing redundant cols:
+
+    iris = iris.drop(['species_virginica', 'species_versicolor'], axis= 1)
+
+    
+
+    train, validate, test = split_iris_data(iris)
+    
+    return train, validate, test
 
 
 #---------------------------------------------------------------------------------
