@@ -109,7 +109,10 @@ def prep_titanic(titanic):
                               drop_first = [True, True])
     titanic = titanic.drop(['sex','embark_town'], axis= 1)
     titanic = pd.concat([titanic, dummy_titanic], axis = 1)
-    return titanic
+
+    train, validate, test = split_titanic_data(titanic)
+    
+    return train, validate, test
 #------------------------------------------------------------------------------------
 
 
